@@ -24,11 +24,13 @@
                     <el-form-item label="日期时间">
                         <el-col :span="11">
                             <el-date-picker
-                                type="date"
+                                type="daterange"
                                 placeholder="选择日期"
                                 v-model="form.date1"
                                 value-format="yyyy-MM-dd"
                                 style="width: 100%;"
+								:picker-options="pickerOptions"
+								
                             ></el-date-picker>
                         </el-col>
                         <el-col class="line" :span="2">-</el-col>
@@ -140,13 +142,35 @@ export default {
                 resource: '小天才',
                 desc: '',
                 options: []
-            }
+            },
+			pickerOptions:{}
         };
     },
     methods: {
         onSubmit() {
             this.$message.success('提交成功！');
         }
-    }
+    },
+	
+	created() {
+		
+		this.pickerOptions.disabledDate = (time) => {
+			let gtime = new Date('2020-08-24')
+			let endtime = new Date('2020-09-15')
+		  // 设置可选择的日期为今天之后的一个月内
+		  let curDate = (new Date()).getTime();
+		  // 这里算出一个月的毫秒数,这里使用30的平均值,实际中应根据具体的每个月有多少天计算
+		  let day = 30 * 24 * 3600 * 1000;
+		  let dateRegion = curDate + day;
+		  console.log("1111111111111"+time.getTime() < Date.now() - 8.64e7)
+		  console.log("2222222222222"+time.getTime() > dateRegion)
+		  // return time.getTime() < Date.now() - 8.64e7 || time.getTime() > dateRegion;
+		  return time.getTime() < gtime.getTime() || time.getTime() > endtime.getTime();
+	
+		  // 设置选择的日期小于当前的日期,小于返回true,日期不可选
+		  // return time.getTime() < Date.now() - 8.64e7
+		}
+	},
+
 };
 </script>
