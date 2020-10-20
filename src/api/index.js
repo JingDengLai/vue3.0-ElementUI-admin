@@ -1,9 +1,18 @@
-import request from '../utils/request';
+import axios from '../utils/request';
+import url from './base';
+import qs from 'qs';
 
-export const fetchData = query => {
-    return request({
-        url: './table.json',
-        method: 'get',
-        params: query
-    });
-};
+
+const cent = {
+    login (params){
+        return axios.post(`${url}/login`,qs.stringify(params))
+    },
+
+    fetchData(query){
+        return axios.get('./table.json',{params:query})
+    }
+}
+
+
+
+export default { cent };

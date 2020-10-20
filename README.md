@@ -90,3 +90,111 @@ import 'element-ui/lib/theme-default/index.css'; // 默认主题
 
 
 ## 组件封装使用
+基于axios封装请求方法
+
+- utils/request.js: 封装axios基本配置
+- api/base.js: 管理接口域名
+- api/index.js: 管理API
+
+
+### 一、封装axios
+request.js
+```javascript
+//引入axios包
+import axios from 'axios';
+// 创建实例并设置连接超时时间，可自定义
+const service = axios.create({
+    timeout: 5000
+});
+// 设置post请求头
+service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+/*
+* 请求拦截器
+* */
+
+service.interceptors.request.use(
+    config => {
+        return config;
+    },
+    error => {
+        console.log(error);
+        return Promise.reject();
+    }
+);
+
+/*
+* 响应拦截器
+* */
+
+service.interceptors.response.use(
+    response => {
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            Promise.reject();
+        }
+    },
+    error => {
+        console.log(error);
+        return Promise.reject();
+    }
+);
+// export default方法导出
+export default service;
+```
+
+### 二、管理接口域名
+base.js
+```javascript
+let url;
+
+// 根据业务需求决定
+url = 'http://xxx.xxx.com'
+
+export default url;
+```
+
+### 三、管理API
+index.js是一个api接口的出口，这样就可以把api接口根据功能划分为多个模块，利于多人协作开发，比如一个人只负责一个模块的开发等，还能方便每个模块中接口的命名哦
+
+```javascript
+import axios from '../utils/request';   // 导入request中创建的axios实例
+import url from './base';   // 导入接口域名列表
+import qs from 'qs';    // 根据需求是否导入qs模块
+
+// 根据业务分模块
+const cent = {
+    // post 请求
+    login (params){
+        return axios.post(`${url}/login`,qs.stringify(params))
+    },
+    // get 请求
+    fetchData(query){
+        return axios.get('./table.json',{params:query})
+    }
+}
+
+
+
+export default { cent };
+```
+
+### 四、为了方便api的调用，我们需要将其挂载到vue的原型上
+main.js
+```javascript
+import api from './api' // 导入api接口
+
+Vue.prototype.$api = api; // 将api挂载到vue的原型上
+```
+
+### 五、使用用例
+```vue
+methods: {    
+    onLoad() {      
+       this.$api.cent.fetchData(this.query).then(res => {
+           console.log(res);
+       });
+    }  
+}
+```
