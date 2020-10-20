@@ -86,3 +86,7 @@ import 'element-ui/lib/theme-default/index.css'; // 默认主题
 ```
 
 第三步：打开 src/components/common/Sidebar.vue 文件，找到 el-menu 标签，把 background-color/text-color/active-text-color 属性去掉即可。
+
+
+
+## 组件封装使用
